@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Conductor's Digital Companion – Ticketing Prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  --bg:#FFFFFF; --surface:#F1F2F4; --ink:#101418; --ink2:#4A525C; --line:#C9CED4;
+  --accent:#FFD400; --on-accent:#101418; --ok:#007A3D; --ok-bg:#D9F4E3; --bad:#C8211A; --bad-bg:#FBE1DF; --warn-bg:#FFF1B8;
+  --page:#E4E6E9;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C0E10; --surface:#1B1F24; --ink:#FFFFFF; --ink2:#A9B1BA; --line:#3A4048;
+    --ok:#4BE08A; --ok-bg:#103A24; --bad:#FF6B63; --bad-bg:#3E1512; --warn-bg:#3D3300; --page:#050607;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C0E10; --surface:#1B1F24; --ink:#FFFFFF; --ink2:#A9B1BA; --line:#3A4048;
+  --ok:#4BE08A; --ok-bg:#103A24; --bad:#FF6B63; --bad-bg:#3E1512; --warn-bg:#3D3300; --page:#050607;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent;}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;padding:0}
+button:focus-visible{outline:4px solid var(--ink);outline-offset:2px}
+.stage{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;align-items:flex-start;padding:20px}
+
+/* ---------- phone ---------- */
+.phone{position:relative;width:min(412px,100%);height:min(915px,calc(100dvh - 40px));min-height:640px;background:var(--bg);border-radius:34px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 10px #0b0b0c,0 20px 60px rgba(0,0,0,.35);transition:background .2s}
+@media (max-width:560px){.stage{padding:0;gap:0}.phone{width:100%;height:100dvh;border-radius:0;box-shadow:none}.panel{margin:16px}}
+
+/* top: display-only zone (~35%) */
+.top{flex:0 0 auto;padding:14px 18px 12px;background:var(--surface);border-bottom:3px solid var(--ink);display:grid;gap:8px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.route{display:flex;align-items:center;gap:10px}
+.badge{background:var(--ink);color:var(--bg);font-weight:900;font-size:22px;padding:4px 12px;border-radius:10px}
+.dir{font-weight:700;font-size:15px;color:var(--ink2)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;padding:5px 10px;border-radius:999px;background:var(--bg);border:2px solid var(--line)}
+.chip.pend{background:var(--warn-bg);border-color:var(--ink)}
+.chip.off{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.chip svg{width:16px;height:16px}
+.here{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.here small{display:block;font-size:14px;font-weight:700;color:var(--ink2)}
+.here .name{font-size:32px;font-weight:900;line-height:1.05;letter-spacing:-.02em}
+.nextbtn{min-width:96px;min-height:56px;padding:0 14px;border-radius:14px;background:var(--bg);border:3px solid var(--ink);font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:6px}
+.nextbtn:active{background:var(--accent)}
+.stats{display:flex;align-items:baseline;justify-content:space-between}
+.cash{font-size:56px;font-weight:900;line-height:1;letter-spacing:-.03em}
+.cash span{font-size:28px;margin-right:2px}
+.tcount{font-size:16px;font-weight:700;color:var(--ink2);text-align:right;line-height:1.25}
+.tcount b{font-size:26px;color:var(--ink);display:block}
+.banner{display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;font-weight:800;font-size:16px;border:3px solid var(--ink)}
+.banner svg{width:24px;height:24px;flex:none}
+.banner.show{display:flex}
+.banner.gps{background:var(--warn-bg)}
+.banner.bat{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+
+/* bottom: thumb zone */
+.bottom{flex:1;min-height:0;display:flex;flex-direction:column;padding:10px 14px calc(14px + env(safe-area-inset-bottom,0px));gap:10px}
+.listhead{display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:16px;color:var(--ink2);padding:0 4px;min-height:36px}
+.same{min-height:44px;padding:0 12px;border-radius:12px;border:2px solid var(--ink);font-weight:800;font-size:15px;color:var(--ink);background:var(--bg);display:flex;align-items:center;gap:6px}
+.same:active{background:var(--accent)}
+.same[disabled]{opacity:.35;border-color:var(--line)}
+.stops{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;overflow-y:auto;overscroll-behavior:contain}
+.stop{flex:1 0 72px;max-height:92px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-radius:16px;background:var(--surface);border:3px solid transparent;text-align:left;transition:transform .08s ease-out,background .08s}
+.stop:active{transform:scale(.975)}
+.stop .nm{font-size:28px;font-weight:800;letter-spacing:-.015em;line-height:1.1}
+.stop .sub{font-size:14px;font-weight:700;color:var(--ink2)}
+.stop .fare{font-size:32px;font-weight:900}
+.stop.sel{background:var(--accent);color:var(--on-accent);border-color:var(--ink)}
+.stop.sel .sub{color:var(--on-accent)}
+.stop .tick{width:30px;height:30px;margin-right:12px;display:none;flex:none}
+.stop.sel .tick{display:block}
+.stop .l{display:flex;align-items:center}
+.counts{display:flex;gap:10px}
+.count{flex:1;height:76px;border-radius:16px;font-size:36px;font-weight:900;background:var(--surface);border:3px solid transparent;transition:transform .08s ease-out}
+.count:active{transform:scale(.94)}
+.count.sel{background:var(--ink);color:var(--bg)}
+.issue{height:96px;border-radius:20px;background:var(--accent);color:var(--on-accent);border:4px solid var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .08s ease-out}
+.issue:active{transform:scale(.97)}
+.issue .big{font-size:36px;font-weight:900;letter-spacing:-.02em;line-height:1}
+.issue .small{font-size:16px;font-weight:700}
+.issue[disabled]{background:var(--surface);color:var(--ink2);border-color:var(--line);transform:none}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:20px}
+.empty b{font-size:26px}
+.empty p{margin:0;color:var(--ink2);font-weight:600;font-size:17px}
+
+/* left hand: mirror secondary controls */
+.phone.lh .listhead,.phone.lh .stop,.phone.lh .here,.phone.lh .stats{flex-direction:row-reverse}
+.phone.lh .stop{text-align:right}
+.phone.lh .stop .l{flex-direction:row-reverse}
+.phone.lh .stop .tick{margin:0 0 0 12px}
+.phone.lh .counts{flex-direction:row-reverse}
+.phone.lh .here .name,.phone.lh .here small{text-align:right}
+.phone.lh .tcount{text-align:left}
+
+/* overlays */
+.flash{position:absolute;inset:0;background:var(--ok);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;opacity:0;pointer-events:none;transition:opacity .12s ease-out;z-index:20;text-align:center;padding:20px}
+:root[data-theme="dark"] .flash{color:#06210F}
+.flash.show{opacity:1}
+.flash svg{width:120px;height:120px}
+.flash .t{font-size:56px;font-weight:900;line-height:1}
+.flash .d{font-size:24px;font-weight:800}
+.flash .e{font-size:20px;font-weight:700;opacity:.95}
+.toast{position:absolute;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));min-height:96px;background:var(--ink);color:var(--bg);border-radius:20px;display:none;align-items:center;gap:12px;padding:12px 12px 12px 18px;z-index:15;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.4);transform:translateY(120%);transition:transform .18s ease-out}
+.toast.show{display:flex;transform:none}
+.toast .msg{flex:1;font-weight:800;font-size:19px;line-height:1.2}
+.toast .msg small{display:block;font-weight:700;font-size:14px;opacity:.8;margin-top:2px}
+.toast .undo{height:68px;min-width:104px;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:900;font-size:22px}
+.toast .bar{position:absolute;left:0;bottom:0;height:5px;background:var(--accent);width:100%;transform-origin:left}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-top:4px solid var(--ink);border-radius:26px 26px 0 0;padding:20px 16px calc(18px + env(safe-area-inset-bottom,0px));z-index:25;display:none;gap:12px;flex-direction:column;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
+.sheet.show{display:flex}
+.sheet h3{margin:0;font-size:28px;font-weight:900}
+.sheet p{margin:0;color:var(--ink2);font-weight:600;font-size:17px}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:24;display:none}
+.scrim.show{display:block}
+.bigbtn{height:76px;border-radius:18px;font-weight:900;font-size:24px;border:4px solid var(--ink);background:var(--accent);color:var(--on-accent)}
+.bigbtn.alt{background:var(--bg);color:var(--ink)}
+.summary{position:absolute;inset:0;background:var(--bg);z-index:30;display:none;flex-direction:column;padding:22px 16px calc(16px + env(safe-area-inset-bottom,0px));gap:12px}
+.summary.show{display:flex}
+.summary h2{margin:0;font-size:32px;font-weight:900}
+.srow{display:flex;justify-content:space-between;align-items:baseline;padding:14px 4px;border-bottom:2px solid var(--line);font-weight:700;font-size:19px}
+.srow b{font-size:30px;font-weight:900}
+.summary .grow{flex:1}
+
+/* reachability heatmap */
+.heat{position:absolute;inset:0;z-index:40;pointer-events:none;display:none}
+.heat.show{display:block}
+.heat div{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.heat .z1{top:0;height:35%;background:rgba(200,33,26,.45)}
+.heat .z2{top:35%;height:25%;background:rgba(240,160,0,.42)}
+.heat .z3{top:60%;height:40%;background:rgba(0,150,70,.45)}
+
+/* ---------- demo panel ---------- */
+.panel{width:min(360px,100%);display:grid;gap:14px;font-size:15px}
+.card{background:var(--bg);border-radius:18px;padding:16px;display:grid;gap:10px;border:2px solid var(--line)}
+.card h2{margin:0;font-size:18px;font-weight:900}
+.card p{margin:0;color:var(--ink2);font-weight:600;line-height:1.4}
+.tg{display:flex;flex-wrap:wrap;gap:8px}
+.tg button{min-height:44px;padding:0 14px;border-radius:12px;border:2px solid var(--ink);font-weight:800;font-size:15px;background:var(--bg)}
+.tg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.timer{display:flex;align-items:baseline;gap:10px}
+.timer b{font-size:44px;font-weight:900;letter-spacing:-.02em}
+.timer span{font-weight:800}
+.pass{color:var(--ok)}.fail{color:var(--bad)}
+.log{margin:0;padding-left:18px;color:var(--ink2);font-weight:600;line-height:1.5}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="stage">
+
+<div class="phone" id="phone" aria-label="Conductor ticketing app prototype">
+  <!-- DISPLAY ZONE -->
+  <header class="top">
+    <div class="row">
+      <div class="route"><span class="badge">335E</span><span class="dir">Majestic to Silk Board</span></div>
+      <span class="chip" id="syncChip"></span>
+    </div>
+    <div class="banner gps" id="gpsBanner" role="status">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="6"/><path d="M4 4l16 16"/></svg>
+      GPS lost. Tap “Next stop” at each stop.
+    </div>
+    <div class="banner bat" id="batBanner" role="status">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2M6 10v4"/></svg>
+      Battery 8%. Plug in the power bank.
+    </div>
+    <div class="here">
+      <div><small>Now at</small><div class="name" id="nowName">Majestic</div></div>
+      <button class="nextbtn" id="nextBtn" aria-label="Move to next stop">Next stop
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+    <div class="stats">
+      <div class="cash"><span>₹</span><span id="cash" style="font-size:56px;margin:0">0</span></div>
+      <div class="tcount"><b id="tix">0</b>tickets</div>
+    </div>
+  </header>
+
+  <!-- THUMB ZONE -->
+  <main class="bottom" id="bottom">
+    <div class="listhead">
+      <span>Where to?</span>
+      <button class="same" id="sameBtn" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>
+        <span id="sameTxt">Same as last</span>
+      </button>
+    </div>
+    <div class="stops" id="stops" role="listbox" aria-label="Upcoming stops"></div>
+    <div class="counts" id="counts" role="radiogroup" aria-label="Passengers"></div>
+    <button class="issue" id="issue" disabled>
+      <span class="big" id="issueBig">Pick a stop</span>
+      <span class="small" id="issueSmall">then tap Issue</span>
+    </button>
+  </main>
+
+  <!-- feedback layers -->
+  <div class="flash" id="flash" aria-live="assertive">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+    <div class="t" id="flT">₹135</div>
+    <div class="d" id="flD">Silk Board × 3</div>
+    <div class="e" id="flE"></div>
+  </div>
+  <div class="toast" id="toast" role="status">
+    <div class="msg" id="toastMsg"></div>
+    <button class="undo" id="undoBtn">Undo</button>
+    <div class="bar" id="toastBar"></div>
+  </div>
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="upi" role="dialog" aria-label="UPI payment pending">
+    <h3>Waiting for UPI</h3>
+    <p>Passenger scanned the code. Payment not confirmed yet. <b id="upiT">0:12</b></p>
+    <button class="bigbtn" id="upiCash">Take cash instead</button>
+    <button class="bigbtn alt" id="upiRetry">Keep waiting</button>
+  </div>
+  <section class="summary" id="summary">
+    <h2>Trip summary</h2>
+    <div class="srow"><span>Collected</span><b id="sCash">₹0</b></div>
+    <div class="srow"><span>Tickets</span><b id="sTix">0</b></div>
+    <div class="srow"><span>Passengers</span><b id="sPax">0</b></div>
+    <div class="srow"><span>Average issue time</span><b id="sAvg">–</b></div>
+    <div class="srow"><span>Waiting to sync</span><b id="sPend">0</b></div>
+    <div class="grow"></div>
+    <button class="bigbtn alt" id="sBack">Back to ticketing</button>
+  </section>
+  <div class="heat" id="heat" aria-hidden="true">
+    <div class="z1">Read only. No taps needed</div>
+    <div class="z2">Reachable with a stretch</div>
+    <div class="z3">Natural thumb zone: every action</div>
+  </div>
+</div>
+
+<!-- DEMO PANEL (not part of the product) -->
+<aside class="panel">
+  <div class="card">
+    <h2>Speed test: 3 passengers</h2>
+    <div class="timer"><b id="tNow">0.0s</b><span id="tVerdict">Tap a stop to start the clock</span></div>
+    <p>The clock starts at your first tap on a stop and stops at Issue. Target: under 4 seconds.</p>
+    <p>Best: <b id="tBest">–</b> · Average: <b id="tAvg">–</b></p>
+  </div>
+  <div class="card">
+    <h2>Environment</h2>
+    <div class="tg">
+      <button id="bTheme" aria-pressed="false">Night mode</button>
+      <button id="bHand" aria-pressed="false">Left hand</button>
+      <button id="bHeat" aria-pressed="false">Reach heatmap</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Edge and error states</h2>
+    <div class="tg">
+      <button id="bGps" aria-pressed="false">GPS lost</button>
+      <button id="bOff" aria-pressed="false">Offline</button>
+      <button id="bBat" aria-pressed="false">Low battery</button>
+      <button id="bUpi">UPI pending</button>
+      <button id="bEnd">End trip</button>
+      <button id="bReset">Reset demo</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Ticket log</h2>
+    <ol class="log" id="log"><li>No tickets yet</li></ol>
+  </div>
+</aside>
+</div>
+
+<script>
+(function(){
+  var STOPS=["Majestic","Anand Rao Circle","Corporation","Town Hall","Lalbagh","South End Circle","Jayanagar 4th Block","BTM Layout","Silk Board"];
+  var FARES=[10,15,20,30,45];
+  var S={cur:0,sel:null,count:1,last:null,tickets:[],synced:14,start:null,gps:true,off:false,bat:false,seq:41,times:[]};
+  var $=function(i){return document.getElementById(i)};
+  var phone=$("phone"),root=document.documentElement;
+
+  /* ---- feedback: haptic + sound ---- */
+  var actx;
+  function beep(f,d){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();var o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;o.type="square";g.gain.value=.06;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d)}catch(e){}}
+  function buzz(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+
+  function upcoming(){return STOPS.slice(S.cur+1,S.cur+6)}
+  function startClock(){if(S.start==null){S.start=performance.now();tick()}}
+  var raf;function tick(){cancelAnimationFrame(raf);(function f(){if(S.start==null)return;$("tNow").textContent=((performance.now()-S.start)/1000).toFixed(1)+"s";raf=requestAnimationFrame(f)})()}
+
+  /* ---- render ---- */
+  var ICON_TICK='<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+  function renderStops(){
+    var box=$("stops"),up=upcoming();box.innerHTML="";
+    if(!up.length){
+      box.innerHTML='<div class="empty"><b>End of route</b><p>No more stops on this trip. Review the day’s collection.</p><button class="bigbtn" id="eoEnd" style="width:100%">End trip</button></div>';
+      $("eoEnd").onclick=showSummary;return;
+    }
+    up.forEach(function(n,i){
+      var b=document.createElement("button");
+      b.className="stop"+(S.sel===i?" sel":"");b.setAttribute("role","option");b.setAttribute("aria-selected",S.sel===i);
+      b.innerHTML='<span class="l">'+ICON_TICK+'<span><span class="nm">'+n+'</span><br><span class="sub">'+(i+1)+(i===0?" stop":" stops")+' away</span></span></span><span class="fare">₹'+FARES[i]+'</span>';
+      b.onclick=function(){startClock();S.sel=(S.sel===i?null:i);buzz(12);beep(900,.03);renderStops();renderIssue()};
+      box.appendChild(b);
+    });
+  }
+  function renderCounts(){
+    var c=$("counts");c.innerHTML="";
+    for(var n=1;n<=5;n++){(function(n){
+      var b=document.createElement("button");b.className="count"+(S.count===n?" sel":"");b.textContent=n;
+      b.setAttribute("role","radio");b.setAttribute("aria-checked",S.count===n);b.setAttribute("aria-label",n+(n>1?" passengers":" passenger"));
+      b.onclick=function(){startClock();S.count=n;buzz(12);beep(700,.03);renderCounts();renderIssue()};
+      c.appendChild(b)})(n)}
+  }
+  function renderIssue(){
+    var b=$("issue");
+    if(S.sel==null){b.disabled=true;$("issueBig").textContent="Pick a stop";$("issueSmall").textContent="then tap Issue"}
+    else{var f=FARES[S.sel];b.disabled=false;$("issueBig").textContent="Issue ₹"+(f*S.count);$("issueSmall").textContent=STOPS[S.cur+1+S.sel]+"  ·  ₹"+f+" × "+S.count}
+    var sb=$("sameBtn");
+    if(S.last&&S.last.k<upcoming().length){sb.disabled=false;$("sameTxt").textContent=upcoming()[S.last.k]+" × "+S.last.n}
+    else{sb.disabled=true;$("sameTxt").textContent="Same as last"}
+  }
+  function renderTop(){
+    $("nowName").textContent=STOPS[S.cur];
+    var cash=S.tickets.reduce(function(a,t){return a+t.total},0);
+    $("cash").textContent=cash.toLocaleString("en-IN");
+    $("tix").textContent=S.tickets.length;
+    var pend=S.tickets.filter(function(t){return t.pending}).length;
+    var c=$("syncChip");
+    var ic='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">';
+    if(S.off){c.className="chip off";c.innerHTML=ic+'<path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M3 3l18 18"/></svg>Offline · '+pend+' pending'}
+    else if(pend){c.className="chip pend";c.innerHTML=ic+'<path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="9"/></svg>Syncing '+pend}
+    else{c.className="chip";c.innerHTML=ic+'<path d="M4 12.5l5 5L20 6.5"/></svg>Synced '+(S.synced+S.tickets.length)}
+    $("gpsBanner").classList.toggle("show",!S.gps);
+    $("batBanner").classList.toggle("show",S.bat);
+    $("nextBtn").style.borderColor=S.gps?"":"var(--ink)";
+    $("nextBtn").style.background=S.gps?"":"var(--accent)";
+    $("nextBtn").style.color=S.gps?"":"var(--on-accent)";
+  }
+  function renderLog(){
+    var l=$("log");
+    if(!S.tickets.length){l.innerHTML="<li>No tickets yet</li>";return}
+    l.innerHTML=S.tickets.slice(-6).reverse().map(function(t){return"<li>#"+t.no+" · "+t.dest+" × "+t.n+" = ₹"+t.total+" · "+t.sec.toFixed(1)+"s"+(t.pending?" · pending":"")+"</li>"}).join("");
+  }
+  function renderStats(){
+    if(!S.times.length){$("tBest").textContent="–";$("tAvg").textContent="–";return}
+    var best=Math.min.apply(null,S.times),avg=S.times.reduce(function(a,b){return a+b},0)/S.times.length;
+    $("tBest").textContent=best.toFixed(1)+"s";$("tAvg").textContent=avg.toFixed(1)+"s";
+  }
+  function renderAll(){renderTop();renderStops();renderCounts();renderIssue();renderLog();renderStats()}
+
+  /* ---- issue ---- */
+  var toastTimer,flashTimer;
+  function issue(){
+    if(S.sel==null)return;
+    var sec=S.start==null?0:(performance.now()-S.start)/1000;S.start=null;cancelAnimationFrame(raf);
+    $("tNow").textContent=sec.toFixed(1)+"s";
+    var v=$("tVerdict");
+    if(sec<4){v.textContent="Under 4 seconds ✓";v.className="pass"}else{v.textContent="Over 4 seconds. Try again";v.className="fail"}
+    var f=FARES[S.sel],n=S.count,dest=STOPS[S.cur+1+S.sel];
+    S.seq++;
+    var t={no:S.seq,dest:dest,n:n,fare:f,total:f*n,k:S.sel,sec:sec,pending:S.off};
+    S.tickets.push(t);S.times.push(sec);S.last={k:S.sel,n:n};S.sel=null;
+    buzz([40,40,40]);beep(1200,.09);
+    $("flT").textContent="₹"+t.total;$("flD").textContent=dest+" × "+n;$("flE").textContent="Ticket #"+t.no+(t.pending?" · saved offline":"");
+    var fl=$("flash");fl.classList.add("show");clearTimeout(flashTimer);flashTimer=setTimeout(function(){fl.classList.remove("show")},650);
+    showToast(t);renderAll();
+  }
+  function showToast(t){
+    var el=$("toast"),bar=$("toastBar");
+    $("toastMsg").innerHTML="Issued #"+t.no+": "+t.dest+" × "+t.n+"<small>₹"+t.total+" · "+t.sec.toFixed(1)+" s</small>";
+    el.classList.add("show");
+    bar.style.transition="none";bar.style.transform="scaleX(1)";
+    void bar.offsetWidth;bar.style.transition="transform 5s linear";bar.style.transform="scaleX(0)";
+    clearTimeout(toastTimer);toastTimer=setTimeout(hideToast,5000);
+  }
+  function hideToast(){$("toast").classList.remove("show")}
+  function undo(){
+    var t=S.tickets.pop();if(!t)return;
+    S.times.pop();S.seq--;hideToast();buzz(30);beep(400,.1);
+    S.sel=t.k;S.count=t.n;S.last=S.tickets.length?{k:S.tickets[S.tickets.length-1].k,n:S.tickets[S.tickets.length-1].n}:null;
+    renderAll();
+  }
+
+  /* ---- events ---- */
+  $("issue").onclick=issue;
+  $("undoBtn").onclick=undo;
+  $("nextBtn").onclick=function(){if(S.cur<STOPS.length-1){S.cur++;S.sel=null;buzz(20);beep(600,.04);renderAll()}};
+  $("sameBtn").onclick=function(){if(!S.last)return;startClock();S.sel=S.last.k;S.count=S.last.n;buzz(12);renderAll()};
+
+  function tg(id,fn){var b=$(id);b.onclick=function(){var on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);fn(on)}}
+  tg("bTheme",function(on){root.setAttribute("data-theme",on?"dark":"light")});
+  tg("bHand",function(on){phone.classList.toggle("lh",on)});
+  tg("bHeat",function(on){$("heat").classList.toggle("show",on)});
+  tg("bGps",function(on){S.gps=!on;renderTop()});
+  tg("bOff",function(on){
+    S.off=on;
+    if(!on){S.tickets.forEach(function(t){t.pending=false});renderLog()}
+    renderTop();
+  });
+  tg("bBat",function(on){S.bat=on;renderTop()});
+
+  var upiInt,upiSec;
+  function closeUpi(){$("upi").classList.remove("show");$("scrim").classList.remove("show");clearInterval(upiInt)}
+  $("bUpi").onclick=function(){
+    upiSec=12;$("upiT").textContent="0:12";
+    $("upi").classList.add("show");$("scrim").classList.add("show");
+    clearInterval(upiInt);upiInt=setInterval(function(){upiSec++;$("upiT").textContent="0:"+(upiSec<10?"0":"")+upiSec},1000);
+  };
+  $("upiCash").onclick=closeUpi;
+  $("upiRetry").onclick=function(){upiSec=0;$("upiT").textContent="0:00"};
+  $("scrim").onclick=closeUpi;
+
+  function showSummary(){
+    var cash=S.tickets.reduce(function(a,t){return a+t.total},0);
+    var pax=S.tickets.reduce(function(a,t){return a+t.n},0);
+    var avg=S.times.length?(S.times.reduce(function(a,b){return a+b},0)/S.times.length).toFixed(1)+"s":"–";
+    $("sCash").textContent="₹"+cash.toLocaleString("en-IN");$("sTix").textContent=S.tickets.length;$("sPax").textContent=pax;$("sAvg").textContent=avg;
+    $("sPend").textContent=S.tickets.filter(function(t){return t.pending}).length;
+    $("summary").classList.add("show");
+  }
+  $("bEnd").onclick=showSummary;
+  $("sBack").onclick=function(){$("summary").classList.remove("show")};
+  $("bReset").onclick=function(){
+    S.cur=0;S.sel=null;S.count=1;S.last=null;S.tickets=[];S.times=[];S.seq=41;S.start=null;cancelAnimationFrame(raf);
+    $("tNow").textContent="0.0s";$("tVerdict").textContent="Tap a stop to start the clock";$("tVerdict").className="";
+    hideToast();closeUpi();$("summary").classList.remove("show");renderAll();
+  };
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
