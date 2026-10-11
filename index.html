@@ -3,218 +3,239 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Conductor's Digital Companion – Ticketing Prototype</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&display=swap">
+<title>Thumbline: ticketing under the thumb</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap">
 <style>
 :root{
   box-sizing:border-box;
-  --bg:#FFFFFF; --surface:#F1F2F4; --ink:#101418; --ink2:#4A525C; --line:#C9CED4;
-  --accent:#FFD400; --on-accent:#101418; --ok:#007A3D; --ok-bg:#D9F4E3; --bad:#C8211A; --bad-bg:#FBE1DF; --warn-bg:#FFF1B8;
-  --page:#E4E6E9;
+  --disp:"Barlow Condensed","Roboto Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:Barlow,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --bg:#FFFFFF; --surface:#F2F4F8; --ink:#0E1116; --ink2:#4B5563; --line:#D5DAE1; --page:#E7EAEF;
+  --blue:#1A3BFF; --on-blue:#FFFFFF;
+  --t0:#EAF0FF; --t1:#D3DFFF; --t2:#B4C8FF; --t3:#86A5FF; --t4:#1A3BFF;
+  --t0i:#0E1116; --t1i:#0E1116; --t2i:#0E1116; --t3i:#0E1116; --t4i:#FFFFFF;
+  --sel-bg:#0E1116; --sel-ink:#FFFFFF;
+  --ok:#00794C; --ok-bg:#DDF5EA; --warn-bg:#FFE9A8; --warn-ink:#4A3500; --bad:#C4251C; --bad-bg:#FCE2DF;
+  --paper:#FFFFFF; --paper-ink:#0E1116;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#0C0E10; --surface:#1B1F24; --ink:#FFFFFF; --ink2:#A9B1BA; --line:#3A4048;
-    --ok:#4BE08A; --ok-bg:#103A24; --bad:#FF6B63; --bad-bg:#3E1512; --warn-bg:#3D3300; --page:#050607;
+    --bg:#0B0D12; --surface:#171B24; --ink:#FFFFFF; --ink2:#A7B0BE; --line:#2E3543; --page:#040508;
+    --blue:#8FA6FF; --on-blue:#0B0D12;
+    --t0:#1A2236; --t1:#1F2D55; --t2:#27408C; --t3:#3157D1; --t4:#7C97FF;
+    --t0i:#FFFFFF; --t1i:#FFFFFF; --t2i:#FFFFFF; --t3i:#FFFFFF; --t4i:#0B0D12;
+    --sel-bg:#FFFFFF; --sel-ink:#0B0D12;
+    --ok:#4BE08A; --ok-bg:#103A24; --warn-bg:#3D3300; --warn-ink:#FFE9A8; --bad:#FF7B72; --bad-bg:#3E1512;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0C0E10; --surface:#1B1F24; --ink:#FFFFFF; --ink2:#A9B1BA; --line:#3A4048;
-  --ok:#4BE08A; --ok-bg:#103A24; --bad:#FF6B63; --bad-bg:#3E1512; --warn-bg:#3D3300; --page:#050607;
+  --bg:#0B0D12; --surface:#171B24; --ink:#FFFFFF; --ink2:#A7B0BE; --line:#2E3543; --page:#040508;
+  --blue:#8FA6FF; --on-blue:#0B0D12;
+  --t0:#1A2236; --t1:#1F2D55; --t2:#27408C; --t3:#3157D1; --t4:#7C97FF;
+  --t0i:#FFFFFF; --t1i:#FFFFFF; --t2i:#FFFFFF; --t3i:#FFFFFF; --t4i:#0B0D12;
+  --sel-bg:#FFFFFF; --sel-ink:#0B0D12;
+  --ok:#4BE08A; --ok-bg:#103A24; --warn-bg:#3D3300; --warn-ink:#FFE9A8; --bad:#FF7B72; --bad-bg:#3E1512;
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent;}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--body);font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;padding:0}
-button:focus-visible{outline:4px solid var(--ink);outline-offset:2px}
+button:focus-visible{outline:4px solid var(--blue);outline-offset:3px}
 .stage{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;align-items:flex-start;padding:20px}
 
 /* ---------- phone ---------- */
-.phone{position:relative;width:min(412px,100%);height:min(915px,calc(100dvh - 40px));min-height:640px;background:var(--bg);border-radius:34px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 10px #0b0b0c,0 20px 60px rgba(0,0,0,.35);transition:background .2s}
+.phone{position:relative;width:min(412px,100%);height:min(915px,calc(100dvh - 40px));min-height:660px;background:var(--bg);border-radius:36px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 10px #0b0b0c,0 24px 70px rgba(0,0,0,.35)}
 @media (max-width:560px){.stage{padding:0;gap:0}.phone{width:100%;height:100dvh;border-radius:0;box-shadow:none}.panel{margin:16px}}
 
-/* top: display-only zone (~35%) */
-.top{flex:0 0 auto;padding:14px 18px 12px;background:var(--surface);border-bottom:3px solid var(--ink);display:grid;gap:8px}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.route{display:flex;align-items:center;gap:10px}
-.badge{background:var(--ink);color:var(--bg);font-weight:900;font-size:22px;padding:4px 12px;border-radius:10px}
-.dir{font-weight:700;font-size:15px;color:var(--ink2)}
-.chip{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;padding:5px 10px;border-radius:999px;background:var(--bg);border:2px solid var(--line)}
-.chip.pend{background:var(--warn-bg);border-color:var(--ink)}
-.chip.off{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
-.chip svg{width:16px;height:16px}
-.here{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
-.here small{display:block;font-size:14px;font-weight:700;color:var(--ink2)}
-.here .name{font-size:32px;font-weight:900;line-height:1.05;letter-spacing:-.02em}
-.nextbtn{min-width:96px;min-height:56px;padding:0 14px;border-radius:14px;background:var(--bg);border:3px solid var(--ink);font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:6px}
-.nextbtn:active{background:var(--accent)}
-.stats{display:flex;align-items:baseline;justify-content:space-between}
-.cash{font-size:56px;font-weight:900;line-height:1;letter-spacing:-.03em}
-.cash span{font-size:28px;margin-right:2px}
-.tcount{font-size:16px;font-weight:700;color:var(--ink2);text-align:right;line-height:1.25}
-.tcount b{font-size:26px;color:var(--ink);display:block}
-.banner{display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;font-weight:800;font-size:16px;border:3px solid var(--ink)}
-.banner svg{width:24px;height:24px;flex:none}
+/* glance deck: read only, no controls */
+.glance{flex:0 0 auto;padding:16px 20px 14px;display:grid;gap:6px;background:var(--bg)}
+.g-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.route{display:flex;align-items:center;gap:10px;font:700 16px var(--body);color:var(--ink2)}
+.route b{font:800 24px var(--disp);background:var(--ink);color:var(--bg);padding:2px 10px;border-radius:8px;letter-spacing:.02em}
+.chip{display:inline-flex;align-items:center;gap:6px;font:700 15px var(--body);padding:5px 11px;border-radius:999px;background:var(--surface);border:2px solid var(--line)}
+.chip svg{width:16px;height:16px;flex:none}
+.chip.wait{background:var(--warn-bg);color:var(--warn-ink);border-color:var(--warn-ink)}
+.chip.off{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
+.now small{display:block;font:700 15px var(--body);color:var(--ink2)}
+.now .name{font:800 50px/1 var(--disp);letter-spacing:-.005em}
+.cashrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.cash{font:800 84px/.9 var(--disp);letter-spacing:-.01em}
+.cash i{font-style:normal;font-size:46px;margin-right:3px;vertical-align:.5em}
+.counts{text-align:right;font:700 15px/1.2 var(--body);color:var(--ink2)}
+.counts b{display:block;font:800 36px/1 var(--disp);color:var(--ink)}
+.tape{display:flex;align-items:center;margin-top:6px}
+.tape i{flex:none;width:12px;height:12px;border-radius:50%;border:3px solid var(--ink2);background:var(--bg)}
+.tape i.done{background:var(--ink2);border-color:var(--ink2)}
+.tape i.cur{width:20px;height:20px;background:var(--blue);border-color:var(--ink)}
+.tape u{flex:1;height:3px;background:var(--line);text-decoration:none}
+.tape u.done{background:var(--ink2)}
+.banner{display:none;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;font:700 16px var(--body)}
+.banner svg{width:22px;height:22px;flex:none}
 .banner.show{display:flex}
-.banner.gps{background:var(--warn-bg)}
-.banner.bat{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.banner.bat{background:var(--bad-bg);color:var(--bad)}
 
-/* bottom: thumb zone */
-.bottom{flex:1;min-height:0;display:flex;flex-direction:column;padding:10px 14px calc(14px + env(safe-area-inset-bottom,0px));gap:10px}
-.listhead{display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:16px;color:var(--ink2);padding:0 4px;min-height:36px}
-.same{min-height:44px;padding:0 12px;border-radius:12px;border:2px solid var(--ink);font-weight:800;font-size:15px;color:var(--ink);background:var(--bg);display:flex;align-items:center;gap:6px}
-.same:active{background:var(--accent)}
-.same[disabled]{opacity:.35;border-color:var(--line)}
-.stops{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;overflow-y:auto;overscroll-behavior:contain}
-.stop{flex:1 0 72px;max-height:92px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-radius:16px;background:var(--surface);border:3px solid transparent;text-align:left;transition:transform .08s ease-out,background .08s}
-.stop:active{transform:scale(.975)}
-.stop .nm{font-size:28px;font-weight:800;letter-spacing:-.015em;line-height:1.1}
-.stop .sub{font-size:14px;font-weight:700;color:var(--ink2)}
-.stop .fare{font-size:32px;font-weight:900}
-.stop.sel{background:var(--accent);color:var(--on-accent);border-color:var(--ink)}
-.stop.sel .sub{color:var(--on-accent)}
-.stop .tick{width:30px;height:30px;margin-right:12px;display:none;flex:none}
-.stop.sel .tick{display:block}
-.stop .l{display:flex;align-items:center}
-.counts{display:flex;gap:10px}
-.count{flex:1;height:76px;border-radius:16px;font-size:36px;font-weight:900;background:var(--surface);border:3px solid transparent;transition:transform .08s ease-out}
-.count:active{transform:scale(.94)}
-.count.sel{background:var(--ink);color:var(--bg)}
-.issue{height:96px;border-radius:20px;background:var(--accent);color:var(--on-accent);border:4px solid var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .08s ease-out}
-.issue:active{transform:scale(.97)}
-.issue .big{font-size:36px;font-weight:900;letter-spacing:-.02em;line-height:1}
-.issue .small{font-size:16px;font-weight:700}
-.issue[disabled]{background:var(--surface);color:var(--ink2);border-color:var(--line);transform:none}
-.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:20px}
-.empty b{font-size:26px}
-.empty p{margin:0;color:var(--ink2);font-weight:600;font-size:17px}
+/* thumb zone */
+.arc{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;padding:0 14px calc(14px + env(safe-area-inset-bottom,0px));background:var(--bg)}
+.gpsbar{display:none;align-items:center;gap:10px;padding:8px 8px 8px 14px;border-radius:16px;background:var(--warn-bg);color:var(--warn-ink);font:700 16px/1.2 var(--body)}
+.gpsbar.show{display:flex}
+.gpsbar span{flex:1}
+.gpsbar button{height:60px;min-width:120px;border-radius:12px;background:var(--warn-ink);color:var(--warn-bg);font:800 24px var(--disp)}
+.stack{display:flex;flex-direction:column;gap:8px}
+.tile{position:relative;display:flex;align-items:center;gap:10px;width:var(--w);height:var(--h);align-self:flex-end;padding:0 12px 0 18px;border-radius:18px;border:3px solid transparent;text-align:left;background:var(--tb);color:var(--ti);transition:transform .08s ease-out}
+.tile:active{transform:scale(.97)}
+.tile .txt{flex:1;min-width:0}
+.tile .nm{display:block;font:800 var(--nf,32px)/1 var(--disp);letter-spacing:.005em}
+.tile .sub{display:block;margin-top:5px;font:600 14px/1.15 var(--body);opacity:.9}
+.tile .fare{font:800 var(--ff,38px)/1 var(--disp)}
+.tile .badge{display:none;flex:none;width:58px;height:58px;border-radius:50%;background:var(--blue);color:var(--on-blue);place-items:center;font:800 38px/1 var(--disp)}
+.tile.sel{background:var(--sel-bg);color:var(--sel-ink);border-color:var(--blue)}
+.tile.sel .badge{display:grid}
+.badge.pop{animation:pop .16s ease-out}
+@keyframes pop{0%{transform:scale(1.35)}100%{transform:scale(1)}}
+.tile.shake{animation:shake .24s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.more{width:78%;height:56px;align-self:flex-end;border-radius:16px;border:3px solid var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font:800 24px var(--disp)}
+.more:active{background:var(--surface)}
+.more svg{width:22px;height:22px}
+.bar{display:flex;gap:10px;height:96px;flex:none;margin-top:2px}
+.side{position:relative;overflow:hidden;width:92px;flex:none;border-radius:20px;background:var(--surface);border:3px solid var(--ink);font:800 44px/1 var(--disp);display:grid;place-items:center}
+.side.undo{font-size:30px;background:var(--ink);color:var(--bg)}
+.side[disabled]{opacity:.35}
+.side .life{position:absolute;left:0;bottom:0;height:6px;width:100%;background:var(--blue);transform-origin:left}
+.issue{position:relative;overflow:hidden;flex:1;border-radius:20px;background:var(--blue);color:var(--on-blue);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:transform .08s ease-out}
+.issue:active{transform:scale(.98)}
+.issue .big{position:relative;font:800 46px/1 var(--disp);letter-spacing:.005em}
+.issue .small{position:relative;font:700 16px/1.1 var(--body)}
+.issue .fill{position:absolute;inset:0;background:rgba(255,255,255,.3);transform:scaleX(0);transform-origin:left}
+:root[data-theme="dark"] .issue .fill{background:rgba(0,0,0,.22)}
+.issue.run .fill{animation:fill var(--settle,1400ms) linear forwards}
+@keyframes fill{to{transform:scaleX(1)}}
+.issue[disabled]{background:var(--surface);color:var(--ink2);transform:none}
+.phone.lh .tile{align-self:flex-start;flex-direction:row-reverse;text-align:right;padding:0 18px 0 12px}
+.phone.lh .more{align-self:flex-start}
+.phone.lh .bar{flex-direction:row-reverse}
+.phone.lh .gpsbar{flex-direction:row-reverse}
 
-/* left hand: mirror secondary controls */
-.phone.lh .listhead,.phone.lh .stop,.phone.lh .here,.phone.lh .stats{flex-direction:row-reverse}
-.phone.lh .stop{text-align:right}
-.phone.lh .stop .l{flex-direction:row-reverse}
-.phone.lh .stop .tick{margin:0 0 0 12px}
-.phone.lh .counts{flex-direction:row-reverse}
-.phone.lh .here .name,.phone.lh .here small{text-align:right}
-.phone.lh .tcount{text-align:left}
+/* empty state */
+.empty{display:none;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:24px 8px}
+.empty.show{display:flex}
+.empty b{font:800 40px var(--disp)}
+.empty p{margin:0 0 6px;color:var(--ink2);font:600 17px/1.3 var(--body)}
 
-/* overlays */
-.flash{position:absolute;inset:0;background:var(--ok);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;opacity:0;pointer-events:none;transition:opacity .12s ease-out;z-index:20;text-align:center;padding:20px}
-:root[data-theme="dark"] .flash{color:#06210F}
-.flash.show{opacity:1}
-.flash svg{width:120px;height:120px}
-.flash .t{font-size:56px;font-weight:900;line-height:1}
-.flash .d{font-size:24px;font-weight:800}
-.flash .e{font-size:20px;font-weight:700;opacity:.95}
-.toast{position:absolute;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));min-height:96px;background:var(--ink);color:var(--bg);border-radius:20px;display:none;align-items:center;gap:12px;padding:12px 12px 12px 18px;z-index:15;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.4);transform:translateY(120%);transition:transform .18s ease-out}
-.toast.show{display:flex;transform:none}
-.toast .msg{flex:1;font-weight:800;font-size:19px;line-height:1.2}
-.toast .msg small{display:block;font-weight:700;font-size:14px;opacity:.8;margin-top:2px}
-.toast .undo{height:68px;min-width:104px;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:900;font-size:22px}
-.toast .bar{position:absolute;left:0;bottom:0;height:5px;background:var(--accent);width:100%;transform-origin:left}
-.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-top:4px solid var(--ink);border-radius:26px 26px 0 0;padding:20px 16px calc(18px + env(safe-area-inset-bottom,0px));z-index:25;display:none;gap:12px;flex-direction:column;box-shadow:0 -10px 40px rgba(0,0,0,.35)}
-.sheet.show{display:flex}
-.sheet h3{margin:0;font-size:28px;font-weight:900}
-.sheet p{margin:0;color:var(--ink2);font-weight:600;font-size:17px}
-.scrim{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:24;display:none}
+/* printed ticket */
+.ticket{position:absolute;left:34px;right:34px;top:28%;z-index:20;pointer-events:none;opacity:0;transform:translateY(60px);transition:opacity .14s ease-out,transform .28s cubic-bezier(.2,.9,.3,1.1)}
+.ticket.show{opacity:1;transform:none}
+.paper{position:relative;background:var(--paper);color:var(--paper-ink);padding:18px 20px 16px;box-shadow:0 14px 40px rgba(0,0,0,.35);font:600 18px/1.25 var(--body)}
+.paper .th{font:800 28px var(--disp);letter-spacing:.04em;text-align:center}
+.paper .dash{border-top:3px dotted var(--paper-ink);margin:9px 0}
+.paper .ln{display:flex;justify-content:space-between;gap:10px}
+.paper .ln span{color:#4B5563}
+.paper .ln b{font:800 24px/1.1 var(--disp)}
+.paper .tot{display:flex;justify-content:space-between;align-items:baseline}
+.paper .tot span{font:800 24px var(--disp)}
+.paper .tot b{font:800 56px/1 var(--disp)}
+.paper .meta{text-align:center;font:600 14px var(--body);color:#4B5563;margin-top:6px}
+.paper svg.zz{position:absolute;left:0;bottom:-10px;width:100%;height:10px;fill:var(--paper)}
+
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:24;display:none}
 .scrim.show{display:block}
-.bigbtn{height:76px;border-radius:18px;font-weight:900;font-size:24px;border:4px solid var(--ink);background:var(--accent);color:var(--on-accent)}
-.bigbtn.alt{background:var(--bg);color:var(--ink)}
-.summary{position:absolute;inset:0;background:var(--bg);z-index:30;display:none;flex-direction:column;padding:22px 16px calc(16px + env(safe-area-inset-bottom,0px));gap:12px}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:78%;background:var(--bg);border-radius:28px 28px 0 0;padding:18px 14px calc(14px + env(safe-area-inset-bottom,0px));z-index:25;display:none;flex-direction:column;gap:10px;box-shadow:0 -12px 40px rgba(0,0,0,.35)}
+.sheet.show{display:flex}
+.sheet h3{margin:0 4px;font:800 32px var(--disp)}
+.sheet p{margin:0 4px;color:var(--ink2);font:600 17px/1.3 var(--body)}
+.list{overflow-y:auto;display:flex;flex-direction:column;gap:8px;overscroll-behavior:contain}
+.row{flex:none;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-radius:16px;background:var(--tb);color:var(--ti);font:800 30px var(--disp)}
+.row:active{transform:scale(.98)}
+.bigbtn{flex:none;height:72px;border-radius:18px;font:800 28px var(--disp);background:var(--blue);color:var(--on-blue)}
+.bigbtn.alt{background:var(--surface);color:var(--ink);border:3px solid var(--ink)}
+.summary{position:absolute;inset:0;background:var(--bg);z-index:30;display:none;flex-direction:column;padding:26px 18px calc(16px + env(safe-area-inset-bottom,0px));gap:6px}
 .summary.show{display:flex}
-.summary h2{margin:0;font-size:32px;font-weight:900}
-.srow{display:flex;justify-content:space-between;align-items:baseline;padding:14px 4px;border-bottom:2px solid var(--line);font-weight:700;font-size:19px}
-.srow b{font-size:30px;font-weight:900}
+.summary h2{margin:0 0 6px;font:800 46px var(--disp)}
+.srow{display:flex;justify-content:space-between;align-items:baseline;padding:13px 2px;border-bottom:2px solid var(--line);font:600 20px var(--body)}
+.srow b{font:800 40px var(--disp)}
 .summary .grow{flex:1}
 
-/* reachability heatmap */
-.heat{position:absolute;inset:0;z-index:40;pointer-events:none;display:none}
-.heat.show{display:block}
-.heat div{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
-.heat .z1{top:0;height:35%;background:rgba(200,33,26,.45)}
-.heat .z2{top:35%;height:25%;background:rgba(240,160,0,.42)}
-.heat .z3{top:60%;height:40%;background:rgba(0,150,70,.45)}
+/* reach overlay: radial from the thumb corner */
+.reach{position:absolute;inset:0;z-index:40;pointer-events:none;display:none;background:radial-gradient(circle at 100% 100%,rgba(0,150,80,.38) 0 330px,rgba(240,160,0,.34) 330px 560px,rgba(200,33,26,.30) 560px)}
+.phone.lh .reach{background:radial-gradient(circle at 0% 100%,rgba(0,150,80,.38) 0 330px,rgba(240,160,0,.34) 330px 560px,rgba(200,33,26,.30) 560px)}
+.reach.show{display:block}
+.reach span{position:absolute;font:800 18px var(--body);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);background:rgba(0,0,0,.55);padding:3px 8px;border-radius:8px}
+.reach .a{bottom:112px;right:14px}.reach .b{bottom:400px;right:14px}.reach .c{top:110px;left:14px}
+.phone.lh .reach .a,.phone.lh .reach .b{right:auto;left:14px}.phone.lh .reach .c{left:auto;right:14px}
 
-/* ---------- demo panel ---------- */
-.panel{width:min(360px,100%);display:grid;gap:14px;font-size:15px}
-.card{background:var(--bg);border-radius:18px;padding:16px;display:grid;gap:10px;border:2px solid var(--line)}
-.card h2{margin:0;font-size:18px;font-weight:900}
-.card p{margin:0;color:var(--ink2);font-weight:600;line-height:1.4}
+/* ---------- panel ---------- */
+.panel{width:min(370px,100%);display:grid;gap:14px;font:600 15px/1.4 var(--body)}
+.card{background:var(--bg);border-radius:20px;padding:16px;display:grid;gap:10px;border:2px solid var(--line)}
+.card h2{margin:0;font:800 26px var(--disp)}
+.card p{margin:0;color:var(--ink2)}
 .tg{display:flex;flex-wrap:wrap;gap:8px}
-.tg button{min-height:44px;padding:0 14px;border-radius:12px;border:2px solid var(--ink);font-weight:800;font-size:15px;background:var(--bg)}
-.tg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
-.timer{display:flex;align-items:baseline;gap:10px}
-.timer b{font-size:44px;font-weight:900;letter-spacing:-.02em}
-.timer span{font-weight:800}
+.tg button{min-height:44px;padding:0 14px;border-radius:12px;border:2px solid var(--ink);font:700 15px var(--body);background:var(--bg)}
+.tg button[aria-pressed="true"]{background:var(--blue);color:var(--on-blue);border-color:var(--blue)}
+.tg button[disabled]{opacity:.4}
+.timer{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.timer b{font:800 56px/1 var(--disp)}
+.timer span{font-weight:700}
 .pass{color:var(--ok)}.fail{color:var(--bad)}
-.log{margin:0;padding-left:18px;color:var(--ink2);font-weight:600;line-height:1.5}
+.log{margin:0;padding-left:20px;color:var(--ink2);line-height:1.6}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="stage">
 
-<div class="phone" id="phone" aria-label="Conductor ticketing app prototype">
-  <!-- DISPLAY ZONE -->
-  <header class="top">
-    <div class="row">
-      <div class="route"><span class="badge">335E</span><span class="dir">Majestic to Silk Board</span></div>
+<div class="phone" id="phone" aria-label="Thumbline conductor ticketing prototype">
+
+  <!-- glance deck: nothing here needs a tap -->
+  <header class="glance">
+    <div class="g-top">
+      <div class="route"><b>335E</b><span>Majestic to Silk Board</span></div>
       <span class="chip" id="syncChip"></span>
-    </div>
-    <div class="banner gps" id="gpsBanner" role="status">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="6"/><path d="M4 4l16 16"/></svg>
-      GPS lost. Tap “Next stop” at each stop.
     </div>
     <div class="banner bat" id="batBanner" role="status">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2M6 10v4"/></svg>
       Battery 8%. Plug in the power bank.
     </div>
-    <div class="here">
-      <div><small>Now at</small><div class="name" id="nowName">Majestic</div></div>
-      <button class="nextbtn" id="nextBtn" aria-label="Move to next stop">Next stop
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
-      </button>
+    <div class="now"><small>Now at</small><div class="name" id="nowName">Majestic</div></div>
+    <div class="cashrow">
+      <div class="cash"><i>₹</i><span id="cash">0</span></div>
+      <div class="counts"><b id="tix">0</b>tickets<b id="pax" style="margin-top:6px">0</b>passengers</div>
     </div>
-    <div class="stats">
-      <div class="cash"><span>₹</span><span id="cash" style="font-size:56px;margin:0">0</span></div>
-      <div class="tcount"><b id="tix">0</b>tickets</div>
-    </div>
+    <div class="tape" id="tape" aria-hidden="true"></div>
   </header>
 
-  <!-- THUMB ZONE -->
-  <main class="bottom" id="bottom">
-    <div class="listhead">
-      <span>Where to?</span>
-      <button class="same" id="sameBtn" disabled>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></svg>
-        <span id="sameTxt">Same as last</span>
+  <!-- thumb zone: everything that needs a tap -->
+  <main class="arc">
+    <div class="gpsbar" id="gpsbar" role="status">
+      <span>GPS lost. Tap when the bus reaches the next stop.</span>
+      <button id="gpsNext">Next stop</button>
+    </div>
+    <div class="empty" id="empty">
+      <b>End of route</b>
+      <p>No stops left on this trip. Review the day’s collection.</p>
+      <button class="bigbtn" id="eoEnd" style="width:100%">End trip</button>
+    </div>
+    <div class="stack" id="stack"></div>
+    <div class="bar" id="bar">
+      <button class="side" id="side" aria-label="Remove one passenger">−</button>
+      <button class="issue" id="issue" disabled>
+        <span class="fill" id="fill"></span>
+        <span class="big" id="issueBig">Tap a stop</span>
+        <span class="small" id="issueSmall">One tap per passenger</span>
       </button>
     </div>
-    <div class="stops" id="stops" role="listbox" aria-label="Upcoming stops"></div>
-    <div class="counts" id="counts" role="radiogroup" aria-label="Passengers"></div>
-    <button class="issue" id="issue" disabled>
-      <span class="big" id="issueBig">Pick a stop</span>
-      <span class="small" id="issueSmall">then tap Issue</span>
-    </button>
   </main>
 
-  <!-- feedback layers -->
-  <div class="flash" id="flash" aria-live="assertive">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
-    <div class="t" id="flT">₹135</div>
-    <div class="d" id="flD">Silk Board × 3</div>
-    <div class="e" id="flE"></div>
-  </div>
-  <div class="toast" id="toast" role="status">
-    <div class="msg" id="toastMsg"></div>
-    <button class="undo" id="undoBtn">Undo</button>
-    <div class="bar" id="toastBar"></div>
-  </div>
+  <div class="ticket" id="ticket" aria-live="polite"></div>
   <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="stops" role="dialog" aria-label="All upcoming stops">
+    <h3>All stops</h3>
+    <div class="list" id="allList"></div>
+    <button class="bigbtn alt" id="stopsClose">Close</button>
+  </div>
   <div class="sheet" id="upi" role="dialog" aria-label="UPI payment pending">
     <h3>Waiting for UPI</h3>
-    <p>Passenger scanned the code. Payment not confirmed yet. <b id="upiT">0:12</b></p>
+    <p>The passenger scanned the code. Payment is not confirmed yet. <b id="upiT">0:12</b></p>
     <button class="bigbtn" id="upiCash">Take cash instead</button>
     <button class="bigbtn alt" id="upiRetry">Keep waiting</button>
   </div>
@@ -223,44 +244,48 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:2px}
     <div class="srow"><span>Collected</span><b id="sCash">₹0</b></div>
     <div class="srow"><span>Tickets</span><b id="sTix">0</b></div>
     <div class="srow"><span>Passengers</span><b id="sPax">0</b></div>
-    <div class="srow"><span>Average issue time</span><b id="sAvg">–</b></div>
+    <div class="srow"><span>Average time to print</span><b id="sAvg">–</b></div>
     <div class="srow"><span>Waiting to sync</span><b id="sPend">0</b></div>
     <div class="grow"></div>
     <button class="bigbtn alt" id="sBack">Back to ticketing</button>
   </section>
-  <div class="heat" id="heat" aria-hidden="true">
-    <div class="z1">Read only. No taps needed</div>
-    <div class="z2">Reachable with a stretch</div>
-    <div class="z3">Natural thumb zone: every action</div>
+  <div class="reach" id="reach" aria-hidden="true">
+    <span class="c">Read only</span><span class="b">Stretch</span><span class="a">Natural thumb reach</span>
   </div>
 </div>
 
-<!-- DEMO PANEL (not part of the product) -->
 <aside class="panel">
   <div class="card">
-    <h2>Speed test: 3 passengers</h2>
+    <h2>How to use it</h2>
+    <p>Tap a stop once for every passenger. The count grows on the tile, and the pitch of the beep rises with each tap. About 1.4 seconds after your last tap, the ticket prints itself. Tap Issue to print right away.</p>
+  </div>
+  <div class="card">
+    <h2>Speed test</h2>
     <div class="timer"><b id="tNow">0.0s</b><span id="tVerdict">Tap a stop to start the clock</span></div>
-    <p>The clock starts at your first tap on a stop and stops at Issue. Target: under 4 seconds.</p>
-    <p>Best: <b id="tBest">–</b> · Average: <b id="tAvg">–</b></p>
+    <p id="tBreak">Target: 3 passengers printed in under 4 seconds.</p>
+    <p>Best <b id="tBest">–</b>, average <b id="tAvg">–</b></p>
   </div>
   <div class="card">
     <h2>Environment</h2>
     <div class="tg">
       <button id="bTheme" aria-pressed="false">Night mode</button>
       <button id="bHand" aria-pressed="false">Left hand</button>
-      <button id="bHeat" aria-pressed="false">Reach heatmap</button>
+      <button id="bReach" aria-pressed="false">Thumb reach</button>
+      <button id="bAuto" aria-pressed="true">Print on settle</button>
     </div>
   </div>
   <div class="card">
-    <h2>Edge and error states</h2>
+    <h2>Simulate</h2>
     <div class="tg">
+      <button id="bMove">Bus reaches next stop</button>
       <button id="bGps" aria-pressed="false">GPS lost</button>
       <button id="bOff" aria-pressed="false">Offline</button>
       <button id="bBat" aria-pressed="false">Low battery</button>
       <button id="bUpi">UPI pending</button>
       <button id="bEnd">End trip</button>
-      <button id="bReset">Reset demo</button>
+      <button id="bReset">Reset</button>
     </div>
+    <p>Likelihood shares on the tiles are simulated. A real build would learn them from ticket history by boarding stop and hour.</p>
   </div>
   <div class="card">
     <h2>Ticket log</h2>
@@ -271,147 +296,239 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:2px}
 
 <script>
 (function(){
-  var STOPS=["Majestic","Anand Rao Circle","Corporation","Town Hall","Lalbagh","South End Circle","Jayanagar 4th Block","BTM Layout","Silk Board"];
-  var FARES=[10,15,20,30,45];
-  var S={cur:0,sel:null,count:1,last:null,tickets:[],synced:14,start:null,gps:true,off:false,bat:false,seq:41,times:[]};
+  var STOPS=["Majestic","Anand Rao","Corporation","Town Hall","Lalbagh","South End","Jayanagar","BTM Layout","Silk Board"];
+  var WEIGHT={"Anand Rao":4,"Corporation":12,"Town Hall":10,"Lalbagh":7,"South End":8,"Jayanagar":10,"BTM Layout":13,"Silk Board":36};
+  var SETTLE=1400, UNDO_MS=5000, MAXPAX=9;
+  var S={cur:0,sel:null,pinned:null,count:0,seq:41,tickets:[],gps:true,off:false,bat:false,auto:true,
+         start:null,lastTap:null,times:[],undoUntil:0,rank:[]};
   var $=function(i){return document.getElementById(i)};
   var phone=$("phone"),root=document.documentElement;
+  var settleT=null,undoT=null,raf=null,tickT=null;
 
-  /* ---- feedback: haptic + sound ---- */
+  /* ---- sound and haptics: pitch climbs one whole tone per passenger ---- */
   var actx;
-  function beep(f,d){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();var o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;o.type="square";g.gain.value=.06;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d)}catch(e){}}
+  function tone(f,d,type){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();var o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;o.type=type||"triangle";g.gain.value=.08;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d)}catch(e){}}
   function buzz(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+  function ladder(n){return 523*Math.pow(2,(Math.max(1,n)-1)*2/12)}
 
-  function upcoming(){return STOPS.slice(S.cur+1,S.cur+6)}
-  function startClock(){if(S.start==null){S.start=performance.now();tick()}}
-  var raf;function tick(){cancelAnimationFrame(raf);(function f(){if(S.start==null)return;$("tNow").textContent=((performance.now()-S.start)/1000).toFixed(1)+"s";raf=requestAnimationFrame(f)})()}
+  /* ---- model ---- */
+  function remaining(){var r=[];for(var i=S.cur+1;i<STOPS.length;i++)r.push(i);return r}
+  function fareFor(abs){var k=abs-S.cur;return Math.min(10+5*(k-1),50)}
+  function tier(f){return f<=10?0:f<=20?1:f<=30?2:f<=40?3:4}
+  function shareFor(abs){var rem=remaining(),tot=0;rem.forEach(function(i){tot+=WEIGHT[STOPS[i]]||1});return Math.round(100*(WEIGHT[STOPS[abs]]||1)/tot)}
+  function ranked(){
+    var rem=remaining().slice().sort(function(a,b){return (WEIGHT[STOPS[b]]||1)-(WEIGHT[STOPS[a]]||1)||a-b});
+    var top=rem.slice(0,4);
+    if(S.pinned!=null&&top.indexOf(S.pinned)<0&&rem.indexOf(S.pinned)>=0){top[top.length-1]=S.pinned}
+    return top; /* index 0 = rank 1 = sits lowest, under the thumb */
+  }
+  function pinTile(abs){return ranked().indexOf(abs)<0}
+
+  /* ---- clock ---- */
+  function startClock(){if(S.start==null){S.start=performance.now();loop()}}
+  function loop(){cancelAnimationFrame(raf);(function f(){if(S.start==null)return;$("tNow").textContent=((performance.now()-S.start)/1000).toFixed(1)+"s";raf=requestAnimationFrame(f)})()}
 
   /* ---- render ---- */
-  var ICON_TICK='<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';
-  function renderStops(){
-    var box=$("stops"),up=upcoming();box.innerHTML="";
-    if(!up.length){
-      box.innerHTML='<div class="empty"><b>End of route</b><p>No more stops on this trip. Review the day’s collection.</p><button class="bigbtn" id="eoEnd" style="width:100%">End trip</button></div>';
-      $("eoEnd").onclick=showSummary;return;
-    }
-    up.forEach(function(n,i){
+  var SIZES=[{h:112,w:100,nf:38,ff:44},{h:96,w:94,nf:34,ff:40},{h:84,w:88,nf:32,ff:36},{h:72,w:82,nf:30,ff:34}];
+  var CHEV='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>';
+  function renderStack(){
+    var box=$("stack"),rem=remaining();box.innerHTML="";
+    $("empty").classList.toggle("show",rem.length===0);
+    $("bar").style.display=rem.length===0?"none":"flex";
+    if(!rem.length)return;
+    var r=ranked();S.rank=r;
+    var more=document.createElement("button");more.className="more";
+    more.innerHTML="<span>All stops ("+rem.length+")</span>"+CHEV;
+    more.onclick=openStops;box.appendChild(more);
+    for(var k=r.length-1;k>=0;k--){(function(k){
+      var abs=r[k],f=fareFor(abs),sz=SIZES[k],t=tier(f);
       var b=document.createElement("button");
-      b.className="stop"+(S.sel===i?" sel":"");b.setAttribute("role","option");b.setAttribute("aria-selected",S.sel===i);
-      b.innerHTML='<span class="l">'+ICON_TICK+'<span><span class="nm">'+n+'</span><br><span class="sub">'+(i+1)+(i===0?" stop":" stops")+' away</span></span></span><span class="fare">₹'+FARES[i]+'</span>';
-      b.onclick=function(){startClock();S.sel=(S.sel===i?null:i);buzz(12);beep(900,.03);renderStops();renderIssue()};
+      b.className="tile"+(S.sel===abs?" sel":"");
+      b.style.setProperty("--h",sz.h+"px");b.style.setProperty("--w",sz.w+"%");
+      b.style.setProperty("--nf",sz.nf+"px");b.style.setProperty("--ff",sz.ff+"px");
+      b.style.setProperty("--tb","var(--t"+t+")");b.style.setProperty("--ti","var(--t"+t+"i)");
+      b.setAttribute("aria-label",STOPS[abs]+", rupees "+f+(S.sel===abs?", "+S.count+" selected":""));
+      var sub=k<2?'<span class="sub">'+(S.pinned===abs&&k===r.length-1&&k>1?"Picked from all stops":shareFor(abs)+"% of boardings here")+'</span>':'';
+      b.innerHTML='<span class="txt"><span class="nm">'+STOPS[abs]+'</span>'+sub+'</span><span class="fare">₹'+f+'</span><span class="badge">'+(S.sel===abs?S.count:"")+'</span>';
+      b.onclick=function(){tapTile(abs,b)};
+      b.dataset.abs=abs;
       box.appendChild(b);
-    });
+    })(k)}
   }
-  function renderCounts(){
-    var c=$("counts");c.innerHTML="";
-    for(var n=1;n<=5;n++){(function(n){
-      var b=document.createElement("button");b.className="count"+(S.count===n?" sel":"");b.textContent=n;
-      b.setAttribute("role","radio");b.setAttribute("aria-checked",S.count===n);b.setAttribute("aria-label",n+(n>1?" passengers":" passenger"));
-      b.onclick=function(){startClock();S.count=n;buzz(12);beep(700,.03);renderCounts();renderIssue()};
-      c.appendChild(b)})(n)}
-  }
-  function renderIssue(){
-    var b=$("issue");
-    if(S.sel==null){b.disabled=true;$("issueBig").textContent="Pick a stop";$("issueSmall").textContent="then tap Issue"}
-    else{var f=FARES[S.sel];b.disabled=false;$("issueBig").textContent="Issue ₹"+(f*S.count);$("issueSmall").textContent=STOPS[S.cur+1+S.sel]+"  ·  ₹"+f+" × "+S.count}
-    var sb=$("sameBtn");
-    if(S.last&&S.last.k<upcoming().length){sb.disabled=false;$("sameTxt").textContent=upcoming()[S.last.k]+" × "+S.last.n}
-    else{sb.disabled=true;$("sameTxt").textContent="Same as last"}
+  function renderBar(){
+    var issue=$("issue"),side=$("side");
+    if(S.sel==null){
+      issue.disabled=true;issue.classList.remove("run");
+      $("issueBig").textContent="Tap a stop";$("issueSmall").textContent="One tap per passenger";
+    }else{
+      var f=fareFor(S.sel);issue.disabled=false;
+      $("issueBig").textContent="Issue ₹"+(f*S.count);
+      $("issueSmall").textContent=S.count+(S.count>1?" passengers":" passenger")+" to "+STOPS[S.sel]+(S.auto?"":", tap to print");
+      if(S.count>=MAXPAX)$("issueSmall").textContent="Maximum "+MAXPAX+" per ticket. Print, then continue.";
+    }
+    var undoLive=S.sel==null&&performance.now()<S.undoUntil&&S.tickets.length>0;
+    if(undoLive){
+      side.className="side undo";side.disabled=false;side.setAttribute("aria-label","Undo last ticket");
+      side.innerHTML='Undo<span class="life" id="life"></span>';
+      var life=$("life");life.style.transition="none";life.style.transform="scaleX("+Math.max(0,(S.undoUntil-performance.now())/UNDO_MS)+")";
+      void life.offsetWidth;life.style.transition="transform "+Math.max(0,S.undoUntil-performance.now())+"ms linear";life.style.transform="scaleX(0)";
+    }else{
+      side.className="side";side.textContent="−";side.setAttribute("aria-label","Remove one passenger");side.disabled=S.sel==null;
+    }
   }
   function renderTop(){
     $("nowName").textContent=STOPS[S.cur];
-    var cash=S.tickets.reduce(function(a,t){return a+t.total},0);
-    $("cash").textContent=cash.toLocaleString("en-IN");
-    $("tix").textContent=S.tickets.length;
-    var pend=S.tickets.filter(function(t){return t.pending}).length;
-    var c=$("syncChip");
+    var cash=S.tickets.reduce(function(a,t){return a+t.total},0),pax=S.tickets.reduce(function(a,t){return a+t.n},0);
+    $("cash").textContent=cash.toLocaleString("en-IN");$("tix").textContent=S.tickets.length;$("pax").textContent=pax;
+    var pend=S.tickets.filter(function(t){return t.pending}).length,c=$("syncChip");
     var ic='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">';
-    if(S.off){c.className="chip off";c.innerHTML=ic+'<path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M3 3l18 18"/></svg>Offline · '+pend+' pending'}
-    else if(pend){c.className="chip pend";c.innerHTML=ic+'<path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="9"/></svg>Syncing '+pend}
-    else{c.className="chip";c.innerHTML=ic+'<path d="M4 12.5l5 5L20 6.5"/></svg>Synced '+(S.synced+S.tickets.length)}
-    $("gpsBanner").classList.toggle("show",!S.gps);
+    if(!S.gps){c.className="chip wait";c.innerHTML=ic+'<circle cx="12" cy="12" r="6"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4 4l16 16"/></svg>GPS lost'}
+    else if(S.off){c.className="chip off";c.innerHTML=ic+'<path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M3 3l18 18"/></svg>Offline, '+pend+' waiting'}
+    else if(pend){c.className="chip wait";c.innerHTML=ic+'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>Syncing '+pend}
+    else{c.className="chip";c.innerHTML=ic+'<path d="M4 12.5l5 5L20 6.5"/></svg>Synced '+(14+S.tickets.length)}
+    $("gpsbar").classList.toggle("show",!S.gps);
     $("batBanner").classList.toggle("show",S.bat);
-    $("nextBtn").style.borderColor=S.gps?"":"var(--ink)";
-    $("nextBtn").style.background=S.gps?"":"var(--accent)";
-    $("nextBtn").style.color=S.gps?"":"var(--on-accent)";
+    var t=$("tape");t.innerHTML="";
+    for(var i=0;i<STOPS.length;i++){
+      var d=document.createElement("i");d.className=i<S.cur?"done":i===S.cur?"cur":"";t.appendChild(d);
+      if(i<STOPS.length-1){var u=document.createElement("u");u.className=i<S.cur?"done":"";t.appendChild(u)}
+    }
   }
   function renderLog(){
     var l=$("log");
     if(!S.tickets.length){l.innerHTML="<li>No tickets yet</li>";return}
-    l.innerHTML=S.tickets.slice(-6).reverse().map(function(t){return"<li>#"+t.no+" · "+t.dest+" × "+t.n+" = ₹"+t.total+" · "+t.sec.toFixed(1)+"s"+(t.pending?" · pending":"")+"</li>"}).join("");
+    l.innerHTML=S.tickets.slice(-6).reverse().map(function(t){return"<li>No. "+t.no+": "+t.dest+" x "+t.n+" = ₹"+t.total+", "+t.sec.toFixed(1)+"s"+(t.pending?", saved offline":"")+"</li>"}).join("");
   }
   function renderStats(){
     if(!S.times.length){$("tBest").textContent="–";$("tAvg").textContent="–";return}
     var best=Math.min.apply(null,S.times),avg=S.times.reduce(function(a,b){return a+b},0)/S.times.length;
     $("tBest").textContent=best.toFixed(1)+"s";$("tAvg").textContent=avg.toFixed(1)+"s";
   }
-  function renderAll(){renderTop();renderStops();renderCounts();renderIssue();renderLog();renderStats()}
+  function renderAll(){renderTop();renderStack();renderBar();renderLog();renderStats()}
 
-  /* ---- issue ---- */
-  var toastTimer,flashTimer;
-  function issue(){
+  /* ---- interaction ---- */
+  function arm(){
+    clearTimeout(settleT);var issue=$("issue"),fill=$("fill");
+    issue.classList.remove("run");
+    if(S.sel==null||!S.auto)return;
+    void fill.offsetWidth;
+    issue.style.setProperty("--settle",SETTLE+"ms");issue.classList.add("run");
+    settleT=setTimeout(function(){doIssue(true)},SETTLE);
+  }
+  function tapTile(abs,el){
+    startClock();S.lastTap=performance.now();S.undoUntil=0;clearTimeout(undoT);
+    if(S.sel===abs){
+      if(S.count>=MAXPAX){buzz([30,30,30]);tone(180,.12,"square");el.classList.add("shake");setTimeout(function(){el.classList.remove("shake")},260);return}
+      S.count++;
+    }else{
+      S.sel=abs;S.count=1;
+      if(pinTile(abs))S.pinned=abs;
+    }
+    buzz(14);tone(ladder(S.count),.09);
+    renderStack();renderBar();
+    var nb=document.querySelector('.tile.sel .badge');if(nb){nb.classList.add("pop")}
+    arm();
+  }
+  function minus(){
+    if(S.sel==null){undo();return}
+    S.lastTap=performance.now();
+    S.count--;buzz(14);tone(ladder(Math.max(1,S.count))*.8,.07);
+    if(S.count<=0){S.sel=null;S.count=0}
+    renderStack();renderBar();arm();
+  }
+  function doIssue(auto){
     if(S.sel==null)return;
-    var sec=S.start==null?0:(performance.now()-S.start)/1000;S.start=null;cancelAnimationFrame(raf);
+    clearTimeout(settleT);$("issue").classList.remove("run");
+    var now=performance.now(),sec=S.start==null?0:(now-S.start)/1000;
+    var tapsSec=S.start==null||S.lastTap==null?0:(S.lastTap-S.start)/1000;
+    var f=fareFor(S.sel),n=S.count,dest=STOPS[S.sel];
+    S.seq++;
+    var t={no:("0000"+S.seq).slice(-4),dest:dest,destAbs:S.sel,n:n,fare:f,total:f*n,sec:sec,pending:S.off,pinned:S.pinned,from:STOPS[S.cur]};
+    S.tickets.push(t);S.times.push(sec);
+    S.start=null;cancelAnimationFrame(raf);
     $("tNow").textContent=sec.toFixed(1)+"s";
     var v=$("tVerdict");
-    if(sec<4){v.textContent="Under 4 seconds ✓";v.className="pass"}else{v.textContent="Over 4 seconds. Try again";v.className="fail"}
-    var f=FARES[S.sel],n=S.count,dest=STOPS[S.cur+1+S.sel];
-    S.seq++;
-    var t={no:S.seq,dest:dest,n:n,fare:f,total:f*n,k:S.sel,sec:sec,pending:S.off};
-    S.tickets.push(t);S.times.push(sec);S.last={k:S.sel,n:n};S.sel=null;
-    buzz([40,40,40]);beep(1200,.09);
-    $("flT").textContent="₹"+t.total;$("flD").textContent=dest+" × "+n;$("flE").textContent="Ticket #"+t.no+(t.pending?" · saved offline":"");
-    var fl=$("flash");fl.classList.add("show");clearTimeout(flashTimer);flashTimer=setTimeout(function(){fl.classList.remove("show")},650);
-    showToast(t);renderAll();
-  }
-  function showToast(t){
-    var el=$("toast"),bar=$("toastBar");
-    $("toastMsg").innerHTML="Issued #"+t.no+": "+t.dest+" × "+t.n+"<small>₹"+t.total+" · "+t.sec.toFixed(1)+" s</small>";
-    el.classList.add("show");
-    bar.style.transition="none";bar.style.transform="scaleX(1)";
-    void bar.offsetWidth;bar.style.transition="transform 5s linear";bar.style.transform="scaleX(0)";
-    clearTimeout(toastTimer);toastTimer=setTimeout(hideToast,5000);
-  }
-  function hideToast(){$("toast").classList.remove("show")}
-  function undo(){
-    var t=S.tickets.pop();if(!t)return;
-    S.times.pop();S.seq--;hideToast();buzz(30);beep(400,.1);
-    S.sel=t.k;S.count=t.n;S.last=S.tickets.length?{k:S.tickets[S.tickets.length-1].k,n:S.tickets[S.tickets.length-1].n}:null;
+    if(sec<4){v.textContent="Under 4 seconds";v.className="pass"}else{v.textContent="Over 4 seconds. Try again";v.className="fail"}
+    $("tBreak").textContent=n+" passengers: taps "+tapsSec.toFixed(1)+"s"+(auto?", settle "+(sec-tapsSec).toFixed(1)+"s":", Issue tapped")+".";
+    S.sel=null;S.count=0;S.pinned=null;
+    buzz([40,40,40]);tone(784,.07,"square");setTimeout(function(){tone(1047,.1,"square")},90);
+    showTicket(t);
+    S.undoUntil=performance.now()+UNDO_MS;
+    clearTimeout(undoT);undoT=setTimeout(function(){S.undoUntil=0;renderBar()},UNDO_MS);
     renderAll();
   }
+  function undo(){
+    if(!S.tickets.length||performance.now()>S.undoUntil)return;
+    var t=S.tickets.pop();S.times.pop();S.seq--;
+    clearTimeout(undoT);S.undoUntil=0;buzz(30);tone(330,.12);
+    S.sel=t.destAbs;S.count=t.n;S.pinned=t.pinned;
+    $("ticket").classList.remove("show");
+    renderAll();
+  }
+  var tkT;
+  function showTicket(t){
+    var z=[];for(var i=0;i<=26;i++){z.push((i*16)+",0");z.push((i*16+8)+",10")}
+    var zz='<svg class="zz" viewBox="0 0 416 10" preserveAspectRatio="none"><polygon points="0,0 '+z.join(" ")+' 416,0"/></svg>';
+    var time=new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    $("ticket").innerHTML='<div class="paper"><div class="th">CITY BUS 335E</div><div class="dash"></div>'+
+      '<div class="ln"><span>From</span><b>'+t.from+'</b></div>'+
+      '<div class="ln"><span>To</span><b>'+t.dest+'</b></div>'+
+      '<div class="ln"><span>Passengers</span><b>'+t.n+'</b></div>'+
+      '<div class="ln"><span>Fare each</span><b>₹'+t.fare+'</b></div>'+
+      '<div class="dash"></div><div class="tot"><span>Total</span><b>₹'+t.total+'</b></div>'+
+      '<div class="meta">Ticket '+t.no+' at '+time+(t.pending?". Saved offline, will sync.":"")+'</div>'+zz+'</div>';
+    var tk=$("ticket");tk.classList.remove("show");void tk.offsetWidth;tk.classList.add("show");
+    clearTimeout(tkT);tkT=setTimeout(function(){tk.classList.remove("show")},1700);
+  }
+  function advance(){
+    if(S.cur>=STOPS.length-1)return;
+    clearTimeout(settleT);S.cur++;S.sel=null;S.count=0;S.pinned=null;S.undoUntil=0;
+    buzz(20);tone(440,.06);renderAll();
+  }
 
-  /* ---- events ---- */
-  $("issue").onclick=issue;
-  $("undoBtn").onclick=undo;
-  $("nextBtn").onclick=function(){if(S.cur<STOPS.length-1){S.cur++;S.sel=null;buzz(20);beep(600,.04);renderAll()}};
-  $("sameBtn").onclick=function(){if(!S.last)return;startClock();S.sel=S.last.k;S.count=S.last.n;buzz(12);renderAll()};
+  /* ---- all stops sheet ---- */
+  function openStops(){
+    var l=$("allList");l.innerHTML="";
+    remaining().forEach(function(abs){
+      var f=fareFor(abs),t=tier(f),b=document.createElement("button");b.className="row";
+      b.style.setProperty("--tb","var(--t"+t+")");b.style.setProperty("--ti","var(--t"+t+"i)");
+      b.innerHTML="<span>"+STOPS[abs]+"</span><span>₹"+f+"</span>";
+      b.onclick=function(){
+        closeSheets();startClock();S.lastTap=performance.now();S.pinned=abs;S.sel=abs;S.count=1;
+        buzz(14);tone(ladder(1),.09);renderAll();arm();
+      };
+      l.appendChild(b);
+    });
+    $("stops").classList.add("show");$("scrim").classList.add("show");
+  }
+  function closeSheets(){$("stops").classList.remove("show");$("upi").classList.remove("show");$("scrim").classList.remove("show");clearInterval(upiInt)}
+  $("stopsClose").onclick=closeSheets;$("scrim").onclick=closeSheets;
 
+  /* ---- wiring ---- */
+  $("issue").onclick=function(){doIssue(false)};
+  $("side").onclick=minus;
+  $("gpsNext").onclick=advance;
+  $("eoEnd").onclick=showSummary;
   function tg(id,fn){var b=$(id);b.onclick=function(){var on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);fn(on)}}
   tg("bTheme",function(on){root.setAttribute("data-theme",on?"dark":"light")});
   tg("bHand",function(on){phone.classList.toggle("lh",on)});
-  tg("bHeat",function(on){$("heat").classList.toggle("show",on)});
-  tg("bGps",function(on){S.gps=!on;renderTop()});
-  tg("bOff",function(on){
-    S.off=on;
-    if(!on){S.tickets.forEach(function(t){t.pending=false});renderLog()}
-    renderTop();
-  });
+  tg("bReach",function(on){$("reach").classList.toggle("show",on)});
+  tg("bAuto",function(on){S.auto=on;clearTimeout(settleT);$("issue").classList.remove("run");renderBar();if(on)arm()});
+  tg("bGps",function(on){S.gps=!on;$("bMove").disabled=on;renderTop()});
+  tg("bOff",function(on){S.off=on;if(!on){S.tickets.forEach(function(t){t.pending=false});renderLog()}renderTop()});
   tg("bBat",function(on){S.bat=on;renderTop()});
+  $("bMove").onclick=function(){if(S.gps)advance()};
 
   var upiInt,upiSec;
-  function closeUpi(){$("upi").classList.remove("show");$("scrim").classList.remove("show");clearInterval(upiInt)}
   $("bUpi").onclick=function(){
-    upiSec=12;$("upiT").textContent="0:12";
-    $("upi").classList.add("show");$("scrim").classList.add("show");
+    upiSec=12;$("upiT").textContent="0:12";$("upi").classList.add("show");$("scrim").classList.add("show");
     clearInterval(upiInt);upiInt=setInterval(function(){upiSec++;$("upiT").textContent="0:"+(upiSec<10?"0":"")+upiSec},1000);
   };
-  $("upiCash").onclick=closeUpi;
+  $("upiCash").onclick=closeSheets;
   $("upiRetry").onclick=function(){upiSec=0;$("upiT").textContent="0:00"};
-  $("scrim").onclick=closeUpi;
 
   function showSummary(){
-    var cash=S.tickets.reduce(function(a,t){return a+t.total},0);
-    var pax=S.tickets.reduce(function(a,t){return a+t.n},0);
+    var cash=S.tickets.reduce(function(a,t){return a+t.total},0),pax=S.tickets.reduce(function(a,t){return a+t.n},0);
     var avg=S.times.length?(S.times.reduce(function(a,b){return a+b},0)/S.times.length).toFixed(1)+"s":"–";
     $("sCash").textContent="₹"+cash.toLocaleString("en-IN");$("sTix").textContent=S.tickets.length;$("sPax").textContent=pax;$("sAvg").textContent=avg;
     $("sPend").textContent=S.tickets.filter(function(t){return t.pending}).length;
@@ -420,9 +537,11 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:2px}
   $("bEnd").onclick=showSummary;
   $("sBack").onclick=function(){$("summary").classList.remove("show")};
   $("bReset").onclick=function(){
-    S.cur=0;S.sel=null;S.count=1;S.last=null;S.tickets=[];S.times=[];S.seq=41;S.start=null;cancelAnimationFrame(raf);
+    clearTimeout(settleT);clearTimeout(undoT);cancelAnimationFrame(raf);
+    S.cur=0;S.sel=null;S.pinned=null;S.count=0;S.seq=41;S.tickets=[];S.times=[];S.start=null;S.undoUntil=0;
     $("tNow").textContent="0.0s";$("tVerdict").textContent="Tap a stop to start the clock";$("tVerdict").className="";
-    hideToast();closeUpi();$("summary").classList.remove("show");renderAll();
+    $("tBreak").textContent="Target: 3 passengers printed in under 4 seconds.";
+    $("ticket").classList.remove("show");closeSheets();$("summary").classList.remove("show");renderAll();
   };
 
   renderAll();
